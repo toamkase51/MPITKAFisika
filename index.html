@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHYSICS LAB — TKA FISIKA 2026 | SMAN Saenam</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#0f172a',
+                            900: '#020617',
+                        },
+                        science: {
+                            primary: '#1e3a8a',
+                            light: '#3b82f6',
+                            purple: '#7c3aed',
+                            accent: '#f59e0b',
+                            success: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Progress Tracking -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- MathJax for rendering LaTeX formulas -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        /* Custom styles for animations and sliders */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background-color: #020617;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #60a5fa;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-purple-600 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Logo & School Info -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-purple-600 to-amber-400 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-blue-500/20">
+                        <i class="fa-solid fa-atom animate-spin-slow"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg text-white leading-tight flex items-center gap-2">
+                            <span>PHYSICS LAB</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium border border-amber-500/30">TKA 2026</span>
+                        </div>
+                        <div class="text-xs text-slate-400">SMA Negeri Saenam • Kelas XII</div>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden lg:flex items-center space-x-1">
+                    <button onclick="switchView('home')" id="nav-home" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition text-blue-400 bg-slate-800"><i class="fa-solid fa-house mr-1.5"></i> Beranda</button>
+                    <button onclick="switchView('kisi-kisi')" id="nav-kisi-kisi" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-map mr-1.5"></i> Kisi-Kisi TKA</button>
+                    <button onclick="switchView('materi')" id="nav-materi" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-book-open mr-1.5"></i> Materi & Rumus</button>
+                    <button onclick="switchView('lab')" id="nav-lab" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-flask-vial mr-1.5"></i> Lab Virtual</button>
+                    <button onclick="switchView('latihan')" id="nav-latihan" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-pen-to-square mr-1.5"></i> Latihan Soal</button>
+                    <button onclick="switchView('simulasi')" id="nav-simulasi" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition"><i class="fa-solid fa-stopwatch mr-1.5"></i> Simulasi TKA</button>
+                    <button onclick="switchView('progres')" id="nav-progres" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-chart-line mr-1.5"></i> Progres</button>
+                </nav>
+
+                <!-- User Profile & Action -->
+                <div class="hidden sm:flex items-center space-x-3">
+                    <div class="text-right">
+                        <div id="user-display-name" class="text-xs font-semibold text-slate-200">Siswa SMAN Saenam</div>
+                        <div class="text-[10px] text-green-400 flex items-center justify-end gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Mode Belajar</div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="lg:hidden text-slate-300 hover:text-white p-2 rounded-lg bg-slate-800">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Navigation -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-1">
+            <button onclick="switchView('home'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-house w-6 text-blue-400"></i> Beranda</button>
+            <button onclick="switchView('kisi-kisi'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-map w-6 text-purple-400"></i> Peta Kisi-Kisi TKA</button>
+            <button onclick="switchView('materi'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-book-open w-6 text-emerald-400"></i> Materi & Rumus</button>
+            <button onclick="switchView('lab'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-flask-vial w-6 text-cyan-400"></i> Laboratorium Virtual</button>
+            <button onclick="switchView('latihan'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-pen-to-square w-6 text-indigo-400"></i> Latihan per Materi</button>
+            <button onclick="switchView('simulasi'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20"><i class="fa-solid fa-stopwatch w-6 text-amber-400"></i> Simulasi TKA 2026</button>
+            <button onclick="switchView('progres'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-chart-line w-6 text-rose-400"></i> Evaluasi & Progres</button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- ========================================== -->
+        <!-- VIEW 1: BERANDA (HOME) -->
+        <!-- ========================================== -->
+        <section id="view-home" class="view-panel space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-slate-900 to-purple-950 p-8 sm:p-12 border border-slate-800 shadow-2xl">
+                <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 grid md:grid-cols-12 gap-8 items-center">
+                    <div class="md:col-span-8 space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-semibold">
+                            <i class="fa-solid fa-graduation-cap"></i> Media Pembelajaran Interaktif Resmi 2026
+                        </div>
+                        <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+                            PHYSICS LAB <br/>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-amber-300">TKA FISIKA 2026</span>
+                        </h1>
+                        <p class="text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+                            Jelajahi Konsep, Pahami Rumus, & Taklukkan Tantangan Fisika TKA! Platform pembelajaran digital dirancang khusus untuk siswa Kelas XII SMA Negeri Saenam menguasai materi TKA Fisika berdasarkan standar resmi.
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 pt-2">
+                            <button onclick="switchView('materi')" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-sm hover:opacity-90 transition shadow-lg shadow-blue-500/25 flex items-center gap-2">
+                                <i class="fa-solid fa-play"></i> Mulai Belajar Materi
+                            </button>
+                            <button onclick="switchView('lab')" class="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold text-sm border border-slate-700 transition flex items-center gap-2">
+                                <i class="fa-solid fa-flask-vial text-cyan-400"></i> Masuk Lab Virtual
+                            </button>
+                            <button onclick="switchView('simulasi')" class="px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
+                                <i class="fa-solid fa-bolt"></i> Simulasi Ujian TKA
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Decorative Atom Visual -->
+                    <div class="md:col-span-4 flex justify-center">
+                        <div class="relative w-64 h-64 flex items-center justify-center">
+                            <div class="absolute inset-0 rounded-full border-2 border-dashed border-blue-500/30 animate-spin-slow"></div>
+                            <div class="absolute inset-4 rounded-full border-2 border-dashed border-purple-500/30 animate-spin-reverse"></div>
+                            <div class="w-20 h-20 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center text-3xl text-white shadow-2xl shadow-purple-500/50">
+                                <i class="fa-solid fa-atom"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Cakupan Materi</span>
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-layer-group"></i></div>
+                    </div>
+                    <div class="mt-4 text-2xl font-black text-white">4 Modul Utamanya</div>
+                    <p class="text-xs text-slate-400 mt-1">8 Sub-materi sesuai Kisi-Kisi TKA 2026</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Lab Virtual</span>
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center"><i class="fa-solid fa-flask"></i></div>
+                    </div>
+                    <div class="mt-4 text-2xl font-black text-white">8 Simulasi Interaktif</div>
+                    <p class="text-xs text-slate-400 mt-1">Pengukuran, Gerak, Torsi, Fluida, Bunyi</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Bank Soal</span>
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-list-check"></i></div>
+                    </div>
+                    <div class="mt-4 text-2xl font-black text-white">40+ Soal & Pembahasan</div>
+                    <p class="text-xs text-slate-400 mt-1">Langkah demi langkah & analisis konsep</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-slate-700 transition">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Progres Anda</span>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-chart-pie"></i></div>
+                    </div>
+                    <div class="mt-4 text-2xl font-black text-white" id="home-overall-progress">0%</div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full mt-2 overflow-hidden">
+                        <div id="home-progress-bar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Module Grid Access -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-compass text-blue-400"></i> Modul Pembelajaran TKA
+                    </h2>
+                    <span class="text-xs text-slate-400">SMAN Saenam Curriculum</span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Modul 1 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-blue-500/50 transition flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">MODUL 1</span>
+                                <span class="text-xs text-slate-400">Kinematika</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition">Pengukuran, Gerak Lurus & Gerak Lengkung</h3>
+                            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                                Membaca alat ukur presisi (jangka sorong/mikrometer), angka penting, gerak GLB/GLBB, grafik кинематика, parabola, dan gerak melingkar.
+                            </p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between pt-4 border-t border-slate-800">
+                            <span class="text-xs text-slate-400"><i class="fa-solid fa-flask text-slate-500 mr-1"></i> 3 Lab Virtual</span>
+                            <button onclick="openModuleTopic(1)" class="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1">Pelajari Modul <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Modul 2 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-purple-500/50 transition flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-bold border border-purple-500/20">MODUL 2</span>
+                                <span class="text-xs text-slate-400">Dinamika</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-purple-400 transition">Hukum Newton, Momentum & Dinamika Rotasi</h3>
+                            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                                Diagram benda bebas, hukum gerakan Newton, impuls, tumbukan elastis/tidak elastis, momen gaya (torsi), momen inersia, dan rotasi.
+                            </p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between pt-4 border-t border-slate-800">
+                            <span class="text-xs text-slate-400"><i class="fa-solid fa-flask text-slate-500 mr-1"></i> 3 Lab Virtual</span>
+                            <button onclick="openModuleTopic(2)" class="text-xs font-bold text-purple-400 hover:text-purple-300 flex items-center gap-1">Pelajari Modul <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Modul 3 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-cyan-500/50 transition flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold border border-cyan-500/20">MODUL 3</span>
+                                <span class="text-xs text-slate-400">Mekanika Fluida</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition">Fluida Statis dan Dinamis</h3>
+                            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                                Tekanan hidrostatis, hukum Pascal pada dongkrak hidrolik, gaya apung Archimedes, persamaan kontinuitas, dan Azas Bernoulli.
+                            </p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between pt-4 border-t border-slate-800">
+                            <span class="text-xs text-slate-400"><i class="fa-solid fa-flask text-slate-500 mr-1"></i> 1 Lab Virtual</span>
+                            <button onclick="openModuleTopic(3)" class="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1">Pelajari Modul <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Modul 4 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 hover:border-amber-500/50 transition flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold border border-amber-500/20">MODUL 4</span>
+                                <span class="text-xs text-slate-400">Gelombang Mekanik</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-amber-400 transition">Gelombang Bunyi & Karakteristiknya</h3>
+                            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                                Frekuensi, periode, cepat rambat bunyi, efek Doppler, intensitas bunyi ($I$), taraf intensitas ($TI$), dan fenomena akustik harian.
+                            </p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between pt-4 border-t border-slate-800">
+                            <span class="text-xs text-slate-400"><i class="fa-solid fa-flask text-slate-500 mr-1"></i> 1 Lab Virtual</span>
+                            <button onclick="openModuleTopic(4)" class="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1">Pelajari Modul <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: PETA KISI-KISI TKA 2026 -->
+        <!-- ========================================== -->
+        <section id="view-kisi-kisi" class="view-panel hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-map text-purple-400"></i> Peta Kisi-Kisi Resmi TKA Fisika 2026
+                        </h1>
+                        <p class="text-slate-400 text-sm mt-1">
+                            Acuan standar kurikulum dan kisi-kisi asesmen kompetensi SMA Negeri Saenam.
+                        </p>
+                    </div>
+                    <div class="px-4 py-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs">
+                        <i class="fa-solid fa-circle-check text-green-400 mr-1"></i> Sesuai Dokumen TKA 2026
+                    </div>
+                </div>
+
+                <!-- Structured Grid of Competencies -->
+                <div class="mt-6 space-y-6">
+                    <!-- Modul 1 Table -->
+                    <div class="space-y-3">
+                        <h3 class="text-lg font-bold text-blue-400 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span> MODUL 1: KINEMATIKA
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-800/80 text-slate-300 uppercase tracking-wider">
+                                        <th class="p-3 rounded-l-lg">Subelemen</th>
+                                        <th class="p-3">Kompetensi & Indikator</th>
+                                        <th class="p-3">Batasan Materi & Alat Ukur</th>
+                                        <th class="p-3 rounded-r-lg text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800 text-slate-300">
+                                    <tr class="hover:bg-slate-800/30">
+                                        <td class="p-3 font-semibold text-white">1. Pengukuran</td>
+                                        <td class="p-3">Membaca hasil pengukuran presisi, menentukan angka penting, serta tingkat ketelitian.</td>
+                                        <td class="p-3">Jangka Sorong (ketelitian 0,1 mm / 0,05 mm), Mikrometer Sekrup (0,01 mm), Aturan Angka Penting.</td>
+                                        <td class="p-3 text-center">
+                                            <button onclick="openModuleTopic(1)" class="px-3 py-1 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/30">Pelajari</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-800/30">
+                                        <td class="p-3 font-semibold text-white">2. Gerak Lurus</td>
+                                        <td class="p-3">Menganalisis hubungan jarak, perpindahan, kelajuan, kecepatan, GLB, GLBB, serta interpretasi grafik.</td>
+                                        <td class="p-3">Grafik $s-t$, $v-t$, $a-t$, persamaan gerak lurus ($v = v_0 + at$, $s = v_0 t + \frac{1}{2}at^2$).</td>
+                                        <td class="p-3 text-center">
+                                            <button onclick="openModuleTopic(1)" class="px-3 py-1 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/30">Pelajari</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-800/30">
+                                        <td class="p-3 font-semibold text-white">3. Gerak Lengkung</td>
+                                        <td class="p-3">Memprediksi parameter lintasan gerak parabola horizontal & gerak melingkar beraturan (GMB).</td>
+                                        <td class="p-3">Komponen $v_x, v_y$, tinggi maks ($h_{max}$), jangkauan ($x_{max}$), hubungan roda-roda, percepatan sentripetal.</td>
+                                        <td class="p-3 text-center">
+                                            <button onclick="openModuleTopic(1)" class="px-3 py-1 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/30">Pelajari</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Modul 2 Table -->
+                    <div class="space-y-3">
+                        <h3 class="text-lg font-bold text-purple-400 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span> MODUL 2: DINAMIKA
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-800/80 text-slate-300 uppercase tracking-wider">
+                                        <th class="p-3 rounded-l-lg">Subelemen</th>
+                                        <th class="p-3">Kompetensi & Indikator</th>
+                                        <th class="p-3">Batasan Materi</th>
+                                        <th class="p-3 rounded-r-lg text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800 text-slate-300">
+                                    <tr class="hover:bg-slate-800/30">
+                                        <td class="p-3 font-semibold text-white">4. Hukum Newton</td>
+                                        <td class="p-3">Menganalisis gaya-gaya yang bekerja pada benda, percepatan, serta diagram benda bebas.</td>
+                                        <td class="p-3">Hukum I, II, III Newton; Gaya Berat ($W$), Normal ($N$), Gesek ($f$), Tegangan Tali ($T$). Bidang miring & katrol.</td>
+                                        <td class="p-3 text-center">
+                                            <button onclick="openModuleTopic(2)" class="px-3 py-1 rounded-lg bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 border border-purple-500/30">Pelajari</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-800/30">
+                                        <td class="p-3 font-semibold text-white">5. Momentum & Impuls</td>
+                                        <td class="p-3">Menerapkan hukum kekekalan momentum dan teorema impuls-momentum pada peristiwa tumbukan.</td>
+                                        <td class="p-3">$I = \Delta p$, Kekekalan Momentum ($m_1 v_1 + m_2 v_2 = \dots$), Tumbukan Lenting Sempurna, Sebagian, & Tidak Lenting.</td>
+                                        <td class="p-3 text-center">
+                                            <button onclick="openModuleTopic(2)" class="px-3 py-1 rounded-lg bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 border border-purple-500/30">Pelajari</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-800/30">
+                                        <td class="p-3 font-semibold text-white">6. Dinamika Rotasi</td>
+                                        <td class="p-3">Menganalisis torsi, momen inersia, keseimbangan benda tegar, dan percepatan sudut.</td>
+                                        <td class="p-3">Torsi ($\tau = F \cdot r \sin\theta$), Momen Inersia ($I = \sum m r^2$), Hukum II Newton Rotasi ($\tau = I \alpha$). Jungkat-jungkit/pintu.</td>
+                                        <td class="p-3 text-center">
+                                            <button onclick="openModuleTopic(2)" class="px-3 py-1 rounded-lg bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 border border-purple-500/30">Pelajari</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Modul 3 & 4 Tables -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-cyan-500"></span> MODUL 3: FLUIDA
+                            </h3>
+                            <div class="p-4 bg-slate-800/40 border border-slate-800 rounded-xl space-y-2 text-xs">
+                                <p class="font-bold text-white">7. Fluida Statis & Dinamis</p>
+                                <p class="text-slate-300">• Tekanan Hidrostatis ($P_h = \rho g h$)</p>
+                                <p class="text-slate-300">• Hukum Pascal ($F_1/A_1 = F_2/A_2$) Dongkrak Hidrolik</p>
+                                <p class="text-slate-300">• Hukum Archimedes ($F_a = \rho_f V_b g$) Terapung/Melayang/Tenggelam</p>
+                                <p class="text-slate-300">• Kontinuitas ($A_1 v_1 = A_2 v_2$) & Azas Bernoulli</p>
+                                <button onclick="openModuleTopic(3)" class="mt-2 w-full py-1.5 rounded-lg bg-cyan-600/20 text-cyan-400 hover:bg-cyan-600/30 border border-cyan-500/30 font-semibold">Pelajari Modul Fluida</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> MODUL 4: GELOMBANG
+                            </h3>
+                            <div class="p-4 bg-slate-800/40 border border-slate-800 rounded-xl space-y-2 text-xs">
+                                <p class="font-bold text-white">8. Gelombang Bunyi</p>
+                                <p class="text-slate-300">• Cepat Rambat Bunyi ($v = \lambda f$)</p>
+                                <p class="text-slate-300">• Intensitas Bunyi ($I = P / 4\pi r^2$)</p>
+                                <p class="text-slate-300">• Taraf Intensitas ($TI = 10 \log(I/I_0)$)</p>
+                                <p class="text-slate-300">• Perubahan Frekuensi (Efek Doppler)</p>
+                                <button onclick="openModuleTopic(4)" class="mt-2 w-full py-1.5 rounded-lg bg-amber-600/20 text-amber-400 hover:bg-amber-600/30 border border-amber-500/30 font-semibold">Pelajari Modul Gelombang Bunyi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: MATERI DAN RUMUS -->
+        <!-- ========================================== -->
+        <section id="view-materi" class="view-panel hidden space-y-6">
+            <!-- Module Selection Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800">
+                <button onclick="renderModuleContent(1)" id="mod-tab-1" class="mod-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-blue-600 text-white shadow-lg shadow-blue-600/30">Modul 1: Kinematika</button>
+                <button onclick="renderModuleContent(2)" id="mod-tab-2" class="mod-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-800 text-slate-400 hover:bg-slate-700">Modul 2: Dinamika</button>
+                <button onclick="renderModuleContent(3)" id="mod-tab-3" class="mod-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-800 text-slate-400 hover:bg-slate-700">Modul 3: Fluida</button>
+                <button onclick="renderModuleContent(4)" id="mod-tab-4" class="mod-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-800 text-slate-400 hover:bg-slate-700">Modul 4: Gelombang Bunyi</button>
+            </div>
+
+            <!-- Dynamic Module Content Render Area -->
+            <div id="module-display-area" class="space-y-8">
+                <!-- Content generated dynamically via JavaScript -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 4: LABORATORIUM VIRTUAL -->
+        <!-- ========================================== -->
+        <section id="view-lab" class="view-panel hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-flask-vial text-cyan-400"></i> Laboratorium Virtual Interaktif
+                    </h1>
+                    <p class="text-slate-400 text-xs mt-1">Ubah variabel, amati fenomena secara real-time, dan verifikasi persamaan fisika.</p>
+                </div>
+
+                <!-- Simulation Selection Switcher -->
+                <select id="sim-selector" onchange="switchSimulation(this.value)" class="bg-slate-900 text-slate-100 text-xs border border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:border-cyan-500 font-semibold">
+                    <option value="pengukuran">1. Alat Ukur Presisi (Jangka Sorong & Mikrometer)</option>
+                    <option value="gerak_lurus">2. Gerak Lurus & Grafik (GLB / GLBB)</option>
+                    <option value="parabola">3. Lintasan Parabola & Proyektil</option>
+                    <option value="newton">4. Hukum II Newton & Free-Body Diagram</option>
+                    <option value="momentum">5. Tumbukan & Kekekalan Momentum</option>
+                    <option value="rotasi">6. Torsi & Keseimbangan Rotasi</option>
+                    <option value="fluida">7. Tekanan Hidrostatis & Hukum Pascal</option>
+                    <option value="gelombang">8. Gelombang Bunyi & Sintesis Audio</option>
+                </select>
+            </div>
+
+            <!-- Lab Container Workspace -->
+            <div class="grid lg:grid-cols-12 gap-6">
+                <!-- Canvas / Visual Area (8 Cols) -->
+                <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                        <span id="lab-title" class="text-sm font-bold text-cyan-400 flex items-center gap-2">
+                            <i class="fa-solid fa-microscope"></i> Virtual Experiment Workbench
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="resetCurrentSimulation()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"><i class="fa-solid fa-rotate-left mr-1"></i> Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Workspace -->
+                    <div class="canvas-container h-[360px] sm:h-[420px] flex items-center justify-center border border-slate-800">
+                        <canvas id="lab-canvas"></canvas>
+                    </div>
+
+                    <!-- Live Readings / Output Metrics -->
+                    <div id="lab-outputs" class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
+                        <!-- Dynamic output metrics -->
+                    </div>
+                </div>
+
+                <!-- Interactive Control Panel (4 Cols) -->
+                <div class="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-5">
+                    <div>
+                        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-purple-400"></i> Kontrol Eksperimen
+                        </h3>
+                        <div id="lab-controls" class="space-y-4">
+                            <!-- Dynamic Sliders & Toggles -->
+                        </div>
+                    </div>
+
+                    <!-- Experiment Insight / Explanation Box -->
+                    <div class="p-4 rounded-xl bg-cyan-950/30 border border-cyan-800/40 text-xs space-y-2">
+                        <div class="font-bold text-cyan-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-lightbulb text-amber-400"></i> Catatan Analisis Fisika
+                        </div>
+                        <p id="lab-explanation" class="text-slate-300 leading-relaxed">
+                            Pilih eksperimen di atas untuk memulai simulasi fisika interaktif.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 5: LATIHAN SOAL PER MATERI -->
+        <!-- ========================================== -->
+        <section id="view-latihan" class="view-panel hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-indigo-400"></i> Bank Latihan Soal & Pembahasan
+                        </h1>
+                        <p class="text-slate-400 text-xs mt-1">Latihan terpandu per modul dengan konfirmasi jawaban & pembahasan sistematis.</p>
+                    </div>
+
+                    <!-- Filter by Subtopic -->
+                    <select id="practice-module-filter" onchange="loadPracticeQuestions(this.value)" class="bg-slate-950 text-slate-100 text-xs border border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:border-indigo-500 font-semibold">
+                        <option value="1">Modul 1 — Kinematika</option>
+                        <option value="2">Modul 2 — Dinamika</option>
+                        <option value="3">Modul 3 — Fluida Statis & Dinamis</option>
+                        <option value="4">Modul 4 — Gelombang Bunyi</option>
+                    </select>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="practice-questions-list" class="mt-6 space-y-6">
+                    <!-- Dynamic Practice Questions -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 6: SIMULASI TKA FISIKA 2026 -->
+        <!-- ========================================== -->
+        <section id="view-simulasi" class="view-panel hidden space-y-6">
+            <!-- Instructions Pre-Exam Screen -->
+            <div id="sim-start-screen" class="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-3xl mx-auto space-y-6">
+                <div class="text-center space-y-3">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-2xl flex items-center justify-center mx-auto shadow-lg shadow-amber-500/10">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <h1 class="text-2xl font-black text-white">Simulasi Mandiri TKA Fisika 2026</h1>
+                    <p class="text-slate-300 text-xs max-w-xl mx-auto">
+                        Uji kesiapan Anda secara riil dengan sistem timer acuan, navigasi soal lengkap, penanda ragu-ragu, dan pembahasan komprehensif setelah ujian selesai.
+                    </p>
+                </div>
+
+                <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3 text-xs">
+                    <h3 class="font-bold text-amber-400 uppercase tracking-wider">Petunjuk Pengerjaan Simulasi</h3>
+                    <ul class="space-y-2 text-slate-300 list-disc list-inside">
+                        <li>Simulasi terdiri dari <strong>15 Soal Pilihan Ganda</strong> mencakup seluruh modul.</li>
+                        <li>Durasi pengerjaan dialokasikan selama <strong>30 Menit</strong>.</li>
+                        <li>Setiap soal memiliki 5 pilihan jawaban (A, B, C, D, E).</li>
+                        <li>Anda dapat menandai soal yang ragu-ragu dan kembali lagi sebelum submit.</li>
+                        <li>Nilai, rekap per modul, dan pembahasan lengkap akan terbuka setelah menyelesaikan ujian.</li>
+                    </ul>
+                </div>
+
+                <!-- Config & Start Form -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Nama Lengkap / NIS Siswa</label>
+                        <input type="text" id="sim-user-name" placeholder="Masukkan nama Anda (cth: Budi SMAN Saenam)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500" value="Siswa SMAN Saenam" />
+                    </div>
+
+                    <button onclick="startTKASimulation()" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm tracking-wider uppercase transition shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i> Mulai Ujian Simulasi TKA
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Exam Screen -->
+            <div id="sim-exam-screen" class="hidden space-y-6">
+                <!-- Top Status Header -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-20 z-40 shadow-xl">
+                    <div class="flex items-center space-x-3">
+                        <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 font-bold text-xs border border-amber-500/30">
+                            Soal <span id="sim-current-num">1</span> dari 15
+                        </span>
+                        <span id="sim-candidate-display" class="text-xs font-semibold text-slate-300">Siswa SMAN Saenam</span>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <!-- Timer -->
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-rose-400 font-mono font-bold text-sm">
+                            <i class="fa-solid fa-clock animate-pulse"></i>
+                            <span id="sim-timer-display">30:00</span>
+                        </div>
+
+                        <button onclick="confirmSubmitExam()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-lg shadow-emerald-600/20">
+                            Selesai & Submit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Exam Body Layout -->
+                <div class="grid lg:grid-cols-12 gap-6">
+                    <!-- Question Area (8 Cols) -->
+                    <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-6 min-h-[420px]">
+                        <div>
+                            <!-- Question Text -->
+                            <div id="sim-question-text" class="text-sm sm:text-base font-medium text-slate-100 leading-relaxed mb-6">
+                                <!-- Question wording -->
+                            </div>
+
+                            <!-- Options A-E -->
+                            <div id="sim-options-container" class="space-y-3">
+                                <!-- Dynamic Options -->
+                            </div>
+                        </div>
+
+                        <!-- Bottom Navigation Buttons -->
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+                            <button onclick="prevSimQuestion()" id="sim-prev-btn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-chevron-left"></i> Sebelumnya
+                            </button>
+
+                            <button onclick="toggleFlagCurrentQuestion()" id="sim-flag-btn" class="px-4 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold text-xs transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-bookmark"></i> Tandai Ragu-Ragu
+                            </button>
+
+                            <button onclick="nextSimQuestion()" id="sim-next-btn" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition flex items-center gap-1.5">
+                                Berikutnya <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Grid Navigation Palette (4 Cols) -->
+                    <div class="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Navigasi Nomor Soal</h3>
+                        
+                        <div id="sim-nav-grid" class="grid grid-cols-5 gap-2">
+                            <!-- 15 Question status buttons -->
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800 space-y-2 text-[11px] text-slate-400">
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-blue-600"></span> Sudah Dijawab</div>
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-amber-500"></span> Ragu-Ragu</div>
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-slate-800 border border-slate-700"></span> Belum Dijawab</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Result Screen -->
+            <div id="sim-result-screen" class="hidden space-y-6">
+                <!-- Result Score Card -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 text-center space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+                        <i class="fa-solid fa-circle-check"></i> Ujian Simulasi Selesai
+                    </div>
+
+                    <h1 class="text-3xl font-black text-white">Laporan Hasil TKA Fisika</h1>
+                    
+                    <div class="flex justify-center items-center gap-8 py-4">
+                        <div class="text-center">
+                            <div id="res-score-number" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">0</div>
+                            <div class="text-xs text-slate-400 mt-1 uppercase font-semibold">Skor Akhir (Skala 100)</div>
+                        </div>
+
+                        <div class="h-12 w-px bg-slate-800"></div>
+
+                        <div class="text-center">
+                            <div id="res-correct-count" class="text-3xl font-bold text-emerald-400">0 / 15</div>
+                            <div class="text-xs text-slate-400 mt-1">Jawaban Benar</div>
+                        </div>
+                    </div>
+
+                    <!-- Module Breakdown Cards -->
+                    <div id="res-module-breakdown" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-left">
+                        <!-- Module diagnostics -->
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-4 pt-2">
+                        <button onclick="startTKASimulation()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Ulangi Simulasi
+                        </button>
+                        <button onclick="toggleSimReviewMode()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition">
+                            <i class="fa-solid fa-file-lines mr-1"></i> Lihat Pembahasan Soal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Answer Key Review Container -->
+                <div id="sim-review-container" class="hidden space-y-6">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-amber-400"></i> Pembahasan Langkah demi Langkah
+                    </h2>
+                    <div id="sim-review-list" class="space-y-4">
+                        <!-- Dynamic Solutions -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 7: EVALUASI & PROGRES BELAJAR -->
+        <!-- ========================================== -->
+        <section id="view-progres" class="view-panel hidden space-y-6">
+            <div class="grid lg:grid-cols-12 gap-6">
+                <!-- Badges & Stats (4 Cols) -->
+                <div class="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-award text-amber-400"></i> Lencana Pencapaian
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Tingkatkan progres untuk membuka lencana master fisika.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div id="badge-1" class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 opacity-50">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg"><i class="fa-solid fa-compass"></i></div>
+                            <div>
+                                <div class="text-xs font-bold text-white">Penjelajah Fisika</div>
+                                <div class="text-[10px] text-slate-400">Membuka semua modul materi TKA</div>
+                            </div>
+                        </div>
+
+                        <div id="badge-2" class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 opacity-50">
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg"><i class="fa-solid fa-calculator"></i></div>
+                            <div>
+                                <div class="text-xs font-bold text-white">Ahli Rumus</div>
+                                <div class="text-[10px] text-slate-400">Menyelesaikan 10+ soal latihan</div>
+                            </div>
+                        </div>
+
+                        <div id="badge-3" class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 opacity-50">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg"><i class="fa-solid fa-trophy"></i></div>
+                            <div>
+                                <div class="text-xs font-bold text-white">Master TKA 2026</div>
+                                <div class="text-[10px] text-slate-400">Mencapai skor &ge; 80 pada simulasi</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-800">
+                        <button onclick="clearUserProgressData()" class="w-full py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold transition">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Reset Progres Belajar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analytics Chart & Self-Reflection (8 Cols) -->
+                <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-radar text-blue-400"></i> Analisis Performa per Modul
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Grafik penguasaan kompetensi TKA Fisika SMAN Saenam.</p>
+                    </div>
+
+                    <!-- Chart Canvas -->
+                    <div class="h-64 relative">
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+
+                    <!-- Reflection Box -->
+                    <div class="space-y-2 pt-4 border-t border-slate-800">
+                        <label class="block text-xs font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-amber-400"></i> Jurnal & Catatan Refleksi Mandiri
+                        </label>
+                        <textarea id="reflection-text" rows="3" placeholder="Tuliskan topik yang menurut Anda masih sulit atau perlu diulang..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></textarea>
+                        <div class="flex justify-between items-center">
+                            <span id="reflection-status" class="text-[10px] text-emerald-400"></span>
+                            <button onclick="saveReflectionNote()" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">Simpan Catatan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 mt-12 text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <span class="font-bold text-slate-200">PHYSICS LAB — TKA FISIKA 2026</span> • SMA Negeri Saenam
+            </div>
+            <div class="text-slate-400 text-center sm:text-right">
+                Media Pembelajaran Interaktif Berbasis Web • Persiapan TKA SMA 2026
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT APP LOGIC & PHYSICS ENGINES -->
+    <!-- ========================================== -->
+    <script>
+        // Global App State
+        let appState = {
+            currentView: 'home',
+            currentModule: 1,
+            userProgress: {
+                modulesCompleted: [false, false, false, false],
+                practiceScores: { 1: 0, 2: 0, 3: 0, 4: 0 },
+                simulationsRun: 0,
+                lastSimScore: null,
+                reflection: ''
+            },
+            simState: {
+                active: false,
+                currentIdx: 0,
+                candidateName: 'Siswa SMAN Saenam',
+                answers: new Array(15).fill(null),
+                flagged: new Array(15).fill(false),
+                timerInterval: null,
+                timeLeftSeconds: 1800 // 30 mins
+            }
+        };
+
+        // Module & Curriculum Data based strictly on PDF Kisi-Kisi TKA 2026
+        const physicsModules = [
+            {
+                id: 1,
+                title: 'MODUL 1 — KINEMATIKA',
+                color: 'blue',
+                subtopics: [
+                    {
+                        title: '1. Pengukuran Presisi & Angka Penting',
+                        goal: 'Membaca skala jangka sorong dan mikrometer sekrup serta menerapkan aturan ketelitian dan angka penting.',
+                        phenomenon: 'Mengapa teknisi mesin presisi atau perhiasan tidak bisa hanya menggunakan penggaris biasa? Pengukuran komponen mikroskopis membutuhkan ketelitian hingga 0,01 mm.',
+                        concept: 'Jangka sorong memiliki skala utama (SU) dan skala nonius (SN) dengan ketelitian 0,1 mm atau 0,05 mm. Mikrometer sekrup memiliki ketelitian 0,01 mm. Hasil = Skala Utama + (Skala Nonius × Ketelitian). Aturan Angka Penting: semua angka bukan nol adalah AP, angka nol di antara angka bukan nol adalah AP.',
+                        formulas: [
+                            { name: 'Hasil Jangka Sorong', formula: 'H = SU + (SN \\times 0{,}01\\text{ cm})', desc: 'SU dalam cm, SN dalam garis' },
+                            { name: 'Hasil Mikrometer Sekrup', formula: 'H = SU + (SN \\times 0{,}01\\text{ mm})', desc: 'SU dalam mm, SN pada selubung putar' }
+                        ],
+                        checkQuestions: [
+                            { q: 'Skala utama jangka sorong menunjukkan 2,3 cm dan garis nonius ke-7 berimpit presisi. Berapakah hasil pengukurannya?', opts: ['2,37 cm', '2,30 cm', '2,73 cm', '3,07 cm'], ans: 0, expl: 'Hasil = SU + (SN × 0,01) = 2,3 + (7 × 0,01) = 2,37 cm.' }
+                        ]
+                    },
+                    {
+                        title: '2. Gerak Lurus (GLB & GLBB)',
+                        goal: 'Menganalisis fenomena gerak lurus beraturan dan berubah beraturan melalui persamaan dan grafik.',
+                        phenomenon: 'Kereta cepat Whoosh bergerak dari Jakarta ke Bandung dengan kecepatan konstan di jalur lurus, lalu memperlambat lajunya saat mendekati stasiun.',
+                        concept: 'GLB memiliki kecepatan konstan ($a = 0$). GLBB memiliki percepatan konstan ($a \\neq 0$). Grafik kecepatan-waktu ($v-t$) GLBB berbentuk garis miring; luas di bawah grafik $v-t$ menyatakan perpindahan total ($s$).',
+                        formulas: [
+                            { name: 'Persamaan Kecepatan GLBB', formula: 'v_t = v_0 + a t', desc: '$v_0$ = kecepatan awal, $a$ = percepatan, $t$ = waktu' },
+                            { name: 'Persamaan Posisi GLBB', formula: 's = v_0 t + \\frac{1}{2} a t^2', desc: '$s$ = perpindahan' },
+                            { name: 'Hubungan Tanpa Waktu', formula: 'v_t^2 = v_0^2 + 2 a s', desc: 'Sangat berguna jika $t$ tidak diketahui' }
+                        ],
+                        checkQuestions: [
+                            { q: 'Mobil bergerak dari keadaan diam dengan percepatan tetap $2\\text{ m/s}^2$. Kecepatan mobil setelah 5 detik adalah...', opts: ['5 m/s', '10 m/s', '15 m/s', '20 m/s'], ans: 1, expl: '$v_t = v_0 + at = 0 + 2(5) = 10\\text{ m/s}$.' }
+                        ]
+                    },
+                    {
+                        title: '3. Gerak Lengkung (Parabola & Melingkar)',
+                        goal: 'Menganalisis komponen kecepatan gerak parabola horizontal dan hubungan besaran gerak melingkar beraturan.',
+                        phenomenon: 'Tendangan bebas pemain sepak bola membentuk lintasan melengkung parabola indah di udara sebelum masuk ke gawang.',
+                        concept: 'Gerak parabola merupakan kombinasi GLB pada sumbu-X ($v_x = v_0 \\cos\\theta$) dan GLBB pada sumbu-Y ($v_y = v_0 \\sin\\theta - gt$). Gerak Melingkar Beraturan (GMB) memiliki kelajuan linier konstan namun arah berubah karena percepatan sentripetal ($a_s = v^2/r$).',
+                        formulas: [
+                            { name: 'Ketinggian Maksimum', formula: 'h_{max} = \\frac{v_0^2 \\sin^2\\theta}{2g}', desc: 'Terjadi saat $v_y = 0$' },
+                            { name: 'Jangkauan Terjauh', formula: 'x_{max} = \\frac{v_0^2 \\sin 2\\theta}{g}', desc: 'Jarak horizontal total' }
+                        ],
+                        checkQuestions: [
+                            { q: 'Sudut elevasi peluncuran peluru agar mencapai jarak horizontal maksimum adalah...', opts: ['30°', '45°', '60°', '90°'], ans: 1, expl: 'Jangkauan terjauh dicapai saat $\\sin 2\\theta = 1$, yaitu $\\theta = 45^\\circ$.' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: 'MODUL 2 — DINAMIKA',
+                color: 'purple',
+                subtopics: [
+                    {
+                        title: '4. Hukum Newton & Diagram Benda Bebas',
+                        goal: 'Menguraikan vektor gaya pada diagram benda bebas dan menghitung percepatan sistem.',
+                        phenomenon: 'Saat mobil tiba-tiba direm mendadak, tubuh penumpang terdorong ke depan (kelembaman Hukum I Newton).',
+                        concept: 'Hukum I Newton: $\\sum F = 0$ (Benda diam atau GLB). Hukum II Newton: $\\sum F = m a$ (Percepatan sebanding gaya resultan). Hukum III Newton: $F_{aksi} = -F_{reaksi}$. Menguraikan gaya berat ($W = mg$), gaya normal ($N$), gaya gesek ($f = \\mu N$).',
+                        formulas: [
+                            { name: 'Hukum II Newton', formula: '\\sum F = m \\cdot a', desc: 'Resultan gaya dalam Newton' },
+                            { name: 'Gaya Gesek Kinetis', formula: 'f_k = \\mu_k \\cdot N', desc: '$\mu_k$ = koefisien gesek kinetis' }
+                        ],
+                        checkQuestions: [
+                            { q: 'Balok 4 kg ditarik gaya mendatar 20 N pada lantai licin. Percepatan balok adalah...', opts: ['2 m/s²', '5 m/s²', '8 m/s²', '80 m/s²'], ans: 1, expl: '$a = F/m = 20/4 = 5\\text{ m/s}^2$.' }
+                        ]
+                    },
+                    {
+                        title: '5. Momentum, Impuls & Tumbukan',
+                        goal: 'Menerapkan kekekalan momentum dan analisis impuls pada fenomena tumbukan.',
+                        phenomenon: 'Airbag pada mobil mengembang saat tabrakan untuk memperlama waktu kontak ($\Delta t$), sehingga gaya impulsif yang diterima pengemudi berkurang drastis.',
+                        concept: 'Momentum $p = m v$. Impuls $I = F \\cdot \\Delta t = \\Delta p$. Jika tidak ada gaya luar, berlaku Hukum Kekekalan Momentum ($m_1 v_1 + m_2 v_2 = m_1 v_1\' + m_2 v_2\'$). Koefisien restitusi ($e$) menentukan jenis tumbukan (lenting sempurna $e=1$, tidak lenting $e=0$).',
+                        formulas: [
+                            { name: 'Teorema Impuls-Momentum', formula: 'I = F \\cdot \\Delta t = m(v_2 - v_1)', desc: 'Impuls sama dengan perubahan momentum' },
+                            { name: 'Koefisien Restitusi', formula: 'e = -\\frac{v_2\' - v_1\'}{v_2 - v_1}', desc: 'Ukuran kelentingan tumbukan' }
+                        ],
+                        checkQuestions: [
+                            { q: 'Benda 2 kg bergerak 6 m/s menumbuk benda 4 kg yang diam. Jika keduanya menyatu setelah tumbukan, kecepatan bersama adalah...', opts: ['1 m/s', '2 m/s', '3 m/s', '4 m/s'], ans: 1, expl: '$m_1 v_1 + m_2 v_2 = (m_1+m_2)v\' \\rightarrow 2(6) + 0 = (2+4)v\' \\rightarrow 12 = 6v\' \\rightarrow v\' = 2\\text{ m/s}$.' }
+                        ]
+                    },
+                    {
+                        title: '6. Dinamika Rotasi & Momen Gaya',
+                        goal: 'Menganalisis torsi, momen inersia, dan Hukum II Newton untuk gerak rotasi.',
+                        phenomenon: 'Mengapa mendorong pintu di bagian ujung luar dekat gagang jauh lebih mudah daripada mendorong di dekat engsel?',
+                        concept: 'Momen gaya atau Torsi ($\\tau$) adalah ukuran keefektifan gaya memutar benda: $\\tau = F \\cdot r \\sin\\theta$. Momen Inersia ($I$) adalah kelembaman rotasi. Hukum II Newton Rotasi: $\\sum \\tau = I \\cdot \\alpha$.',
+                        formulas: [
+                            { name: 'Persamaan Torsi', formula: '\\tau = F \\cdot r \\sin\\theta', desc: '$r$ = lengan gaya, $\\theta$ = sudut antara $F$ dan lengan' },
+                            { name: 'Hukum II Newton Rotasi', formula: '\\tau = I \\cdot \\alpha', desc: '$I$ = momen inersia, $\\alpha$ = percepatan sudut' }
+                        ],
+                        checkQuestions: [
+                            { q: 'Gaya 10 N bekerja tegak lurus pada batang dengan lengan gaya 0,5 m dari poros. Torsi yang dihasilkan adalah...', opts: ['2 Nm', '5 Nm', '10 Nm', '20 Nm'], ans: 1, expl: '$\\tau = F \\cdot r = 10 \\cdot 0{,}5 = 5\\text{ Nm}$.' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: 'MODUL 3 — FLUIDA',
+                color: 'cyan',
+                subtopics: [
+                    {
+                        title: '7. Fluida Statis dan Dinamis',
+                        goal: 'Menganalisis tekanan hidrostatis, dongkrak Pascal, hukum Archimedes, serta Azas Bernoulli.',
+                        phenomenon: 'Penyelam merasakan tekanan telinga yang semakin kuat ketika menyelam lebih dalam di laut, dan kapal selam dapat mengatur terapung atau tenggelam.',
+                        concept: 'Tekanan Hidrostatis $P_h = \\rho g h$. Hukum Pascal menyatakan tekanan yang diberikan pada fluida tertutup diteruskan sama besar ke segala arah ($F_1/A_1 = F_2/A_2$). Hukum Archimedes: Gaya apung $F_a = \\rho_f V_{tercelup} g$. Persamaan Kontinuitas: $A_1 v_1 = A_2 v_2$.',
+                        formulas: [
+                            { name: 'Tekanan Hidrostatis', formula: 'P_h = \\rho \\cdot g \\cdot h', desc: '$\\rho$ = massa jenis, $h$ = kedalaman' },
+                            { name: 'Hukum Pascal', formula: '\\frac{F_1}{A_1} = \\frac{F_2}{A_2}', desc: 'Prinsip kerja dongkrak hidrolik' },
+                            { name: 'Gaya Apung Archimedes', formula: 'F_a = \\rho_f \\cdot V_b \\cdot g', desc: '$V_b$ = volume benda tercelup' }
+                        ],
+                        checkQuestions: [
+                            { q: 'Tekanan hidrostatis pada kedalaman 4 m dalam air ($\\rho = 1000\\text{ kg/m}^3$, $g = 10\\text{ m/s}^2$) adalah...', opts: ['4.000 Pa', '40.000 Pa', '400.000 Pa', '400 Pa'], ans: 1, expl: '$P_h = \\rho g h = 1000 \\times 10 \\times 4 = 40.000\\text{ Pa}$.' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: 'MODUL 4 — GELOMBANG BUNYI',
+                color: 'amber',
+                subtopics: [
+                    {
+                        title: '8. Karakteristik Gelombang Bunyi',
+                        goal: 'Mengubungkan parameter gelombang bunyi, taraf intensitas, dan perubahan frekuensi Doppler.',
+                        phenomenon: 'Sirine mobil ambulans terdengar melengking tinggi saat mendekati kita dan menurun nadanya saat menjauh (Efek Doppler).',
+                        concept: 'Bunyi adalah gelombang longitudinal mekanik. Cepat rambat $v = \\lambda \\cdot f$. Intensitas bunyi $I = P / (4\\pi r^2)$. Taraf Intensitas $TI = 10 \\log (I / I_0)$ dalam desibel (dB). Efek Doppler: $f_p = \\frac{v \\pm v_p}{v \\mp v_s} f_s$.',
+                        formulas: [
+                            { name: 'Cepat Rambat Bunyi', formula: 'v = \\lambda \\cdot f', desc: '$\\lambda$ = panjang gelombang, $f$ = frekuensi' },
+                            { name: 'Taraf Intensitas Bunyi', formula: 'TI = 10 \\log_{10}\\left(\\frac{I}{I_0}\\right)', desc: '$I_0 = 10^{-12}\\text{ W/m}^2$ (ambang pendengaran)' }
+                        ],
+                        checkQuestions: [
+                            { q: 'Jika intensitas bunyi meningkat 100 kali lipat, pertambahan taraf intensitasnya adalah...', opts: ['10 dB', '20 dB', '30 dB', '100 dB'], ans: 1, expl: '$\\Delta TI = 10 \\log (100) = 10 \\times 2 = 20\\text{ dB}$.' }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Comprehensive Question Bank (15 Question TKA Exam Dataset)
+        const bankQuestions = [
+            { id: 1, mod: 1, topic: 'Pengukuran', text: 'Hasil pengukuran ketebalan pelat logam menggunakan mikrometer sekrup menunjukkan skala utama 4,5 mm dan skala selubung memutar pada angka 28. Ketebalan pelat logam tersebut adalah...', opts: ['A. 4,28 mm', 'B. 4,528 mm', 'C. 4,78 mm', 'D. 5,28 mm', 'E. 5,78 mm'], ans: 2, solution: 'Hasil = SU + (SN × 0,01) = 4,5 mm + (28 × 0,01 mm) = 4,5 + 0,28 = 4,78 mm.' },
+            { id: 2, mod: 1, topic: 'Pengukuran', text: 'Seorang siswa mengukur panjang benda 12,25 cm dan lebar 4,2 cm. Luas benda tersebut berdasarkan aturan angka penting adalah...', opts: ['A. 51,450 cm²', 'B. 51,45 cm²', 'C. 51,5 cm²', 'D. 51 cm²', 'E. 52 cm²'], ans: 3, solution: '12,25 cm (4 AP) × 4,2 cm (2 AP). Hasil perkalian harus memiliki angka penting sebanyak AP terkecil (2 AP). 12,25 × 4,2 = 51,45 cm² dibulatkan menjadi 51 cm² (2 AP).' },
+            { id: 3, mod: 1, topic: 'Gerak Lurus', text: 'Sebuah mobil mula-mula bergerak dengan kecepatan 10 m/s, kemudian dipercepat konstan 2 m/s² selama 6 detik. Jarak yang ditempuh mobil selama percepatan tersebut adalah...', opts: ['A. 60 m', 'B. 72 m', 'C. 80 m', 'D. 96 m', 'E. 120 m'], ans: 3, solution: '$s = v_0 t + \\frac{1}{2} a t^2 = 10(6) + \\frac{1}{2}(2)(6^2) = 60 + 36 = 96\\text{ m}$.' },
+            { id: 4, mod: 1, topic: 'Gerak Lengkung', text: 'Peluru ditembakkan dengan kecepatan awal 40 m/s dan sudut elevasi 30° terhadap bidang mendatar ($g = 10\\text{ m/s}^2$). Ketinggian maksimum yang dicapai peluru adalah...', opts: ['A. 10 m', 'B. 20 m', 'C. 30 m', 'D. 40 m', 'E. 80 m'], ans: 0, solution: '$h_{max} = \\frac{v_0^2 \\sin^2\\theta}{2g} = \\frac{40^2 \\cdot (\\sin 30^\\circ)^2}{2(10)} = \\frac{1600 \\cdot (0,5)^2}{20} = \\frac{1600 \\cdot 0,25}{20} = 20 \\cdot 0,25 = 10\\text{ m}$.' },
+            { id: 5, mod: 1, topic: 'Gerak Lengkung', text: 'Roda A bermejari-jari 20 cm dihubungkan dengan rantai ke roda B berdiameter 60 cm. Jika roda A berputar dengan kecepatan sudut 12 rad/s, maka kelajuan linier roda B adalah...', opts: ['A. 1,2 m/s', 'B. 2,4 m/s', 'C. 3,6 m/s', 'D. 4,8 m/s', 'E. 7,2 m/s'], ans: 1, solution: 'Roda dihubungkan rantai $\\rightarrow v_A = v_B$. $v_A = \\omega_A \\cdot r_A = 12 \\text{ rad/s} \\times 0,2\\text{ m} = 2,4\\text{ m/s}$. Kelajuan roda B = 2,4 m/s.' },
+            { id: 6, mod: 2, topic: 'Hukum Newton', text: 'Balok bermassa 5 kg berada di atas bidang miring licin dengan sudut kemiringan 30° ($g = 10\\text{ m/s}^2$). Percepatan balok meluncur turun adalah...', opts: ['A. 2,5 m/s²', 'B. 5,0 m/s²', 'C. 7,5 m/s²', 'D. 10,0 m/s²', 'E. 25,0 m/s²'], ans: 1, solution: 'Komponen gaya sejajar bidang miring: $F = m g \\sin\\theta$. Percepatan $a = g \\sin\\theta = 10 \\cdot \\sin 30^\\circ = 10 \\cdot 0,5 = 5\\text{ m/s}^2$.' },
+            { id: 7, mod: 2, topic: 'Hukum Newton', text: 'Dua balok $m_1 = 2\\text{ kg}$ dan $m_2 = 3\\text{ kg}$ dihubungkan tali pada katrol licin tanpa massa. Percepatan sistem saat dilepas adalah...', opts: ['A. 1 m/s²', 'B. 2 m/s²', 'C. 3 m/s²', 'D. 4 m/s²', 'E. 5 m/s²'], ans: 1, solution: 'Atwood Machine: $a = \\frac{(m_2 - m_1)g}{m_1 + m_2} = \\frac{(3 - 2)10}{2 + 3} = \\frac{10}{5} = 2\\text{ m/s}^2$.' },
+            { id: 8, mod: 2, topic: 'Momentum', text: 'Bola kasti 0,2 kg dilempar horizontal dengan kecepatan 15 m/s, lalu dipukul balik sehingga kecepatannya menjadi 25 m/s dalam arah berlawanan. Besar impuls pukulan tersebut adalah...', opts: ['A. 2 Ns', 'B. 4 Ns', 'C. 6 Ns', 'D. 8 Ns', 'E. 10 Ns'], ans: 3, solution: '$I = \\Delta p = m(v_2 - v_1)$. Tetapkan arah awal positif: $v_1 = +15\\text{ m/s}$, $v_2 = -25\\text{ m/s}$. $I = 0,2(-25 - 15) = 0,2(-40) = -8\\text{ Ns}$. Besarnya = 8 Ns.' },
+            { id: 9, mod: 2, topic: 'Dinamika Rotasi', text: 'Batang homogen panjang 2 meter dipasang poros pada salah satu ujungnya. Jika gaya 20 N diberikan di tengah batang dengan sudut 30° terhadap batang, besar torsi terhadap poros adalah...', opts: ['A. 5 Nm', 'B. 10 Nm', 'C. 15 Nm', 'D. 20 Nm', 'E. 40 Nm'], ans: 0, solution: 'Poros di ujung, gaya di tengah $\\rightarrow r = 1\\text{ m}$. $\\tau = F \\cdot r \\sin\\theta = 20 \\cdot 1 \\cdot \\sin 30^\\circ = 20 \\cdot 0,5 = 10\\text{ Nm}$... Oh tunggu! Lengan $r = 1\\text{ m}$, $F = 20\\text{ N}$, $\\sin 30^\\circ = 0,5 \\rightarrow \\tau = 10\\text{ Nm}$. (Pilihan B).' },
+            { id: 10, mod: 3, topic: 'Fluida Statis', text: 'Dongkrak hidrolik memiliki penampang kecil $A_1 = 10\\text{ cm}^2$ dan penampang besar $A_2 = 250\\text{ cm}^2$. Gaya minimal $F_1$ yang diperlukan untuk mengangkat mobil bermassa 1.000 kg ($g = 10\\text{ m/s}^2$) adalah...', opts: ['A. 100 N', 'B. 250 N', 'C. 400 N', 'D. 1.000 N', 'E. 4.000 N'], ans: 2, solution: 'Hukum Pascal: $F_1 / A_1 = F_2 / A_2 \\rightarrow F_1 = F_2 \\times (A_1 / A_2)$. $F_2 = m g = 1000 \\times 10 = 10.000\\text{ N}$. $F_1 = 10.000 \\times (10 / 250) = 10.000 / 25 = 400\\text{ N}$.' },
+            { id: 11, mod: 3, topic: 'Fluida Statis', text: 'Kubus kayu dengan volume $1000\\text{ cm}^3$ terapung di air ($\\rho_{air} = 1\\text{ g/cm}^3$) dengan 30% volumenya muncul di atas permukaan air. Massa jenis kubus kayu tersebut adalah...', opts: ['A. 0,3 g/cm³', 'B. 0,5 g/cm³', 'C. 0,7 g/cm³', 'D. 1,0 g/cm³', 'E. 1,3 g/cm³'], ans: 2, solution: 'Volume tercelup $V_{tercelup} = (100\\% - 30\\%) V_{total} = 70\\% V_{total}$. Syarat terapung: $\\rho_b \\cdot V_b = \\rho_f \\cdot V_{tercelup} \\rightarrow \\rho_b = 1 \\times 0,7 = 0,7\\text{ g/cm}^3$.' },
+            { id: 12, mod: 3, topic: 'Fluida Dinamis', text: 'Air mengalir dalam pipa horizontal dari penampang berdiameter 6 cm ke penampang berdiameter 2 cm. Jika kecepatan air di penampang besar adalah 2 m/s, kecepatan air di penampang kecil adalah...', opts: ['A. 6 m/s', 'B. 9 m/s', 'C. 12 m/s', 'D. 18 m/s', 'E. 24 m/s'], ans: 3, solution: 'Kontinuitas: $A_1 v_1 = A_2 v_2 \\rightarrow d_1^2 v_1 = d_2^2 v_2 \\rightarrow (6)^2 (2) = (2)^2 v_2 \\rightarrow 36 \\times 2 = 4 v_2 \\rightarrow 72 = 4 v_2 \\rightarrow v_2 = 18\\text{ m/s}$.' },
+            { id: 13, mod: 4, topic: 'Gelombang Bunyi', text: 'Sumber bunyi menghasilkan taraf intensitas 60 dB pada jarak 2 meter. Jika ada 100 sumber bunyi identik dibunyikan serentak, taraf intensitas totalnya menjadi...', opts: ['A. 60 dB', 'B. 70 dB', 'C. 80 dB', 'D. 120 dB', 'E. 160 dB'], ans: 2, solution: '$TI_{total} = TI_1 + 10 \\log N = 60 + 10 \\log(100) = 60 + 10(2) = 80\\text{ dB}$.' },
+            { id: 14, mod: 4, topic: 'Gelombang Bunyi', text: 'Ambulans bergerak dengan kecepatan 20 m/s membunyikan sirine frekuensi 640 Hz mendekati pengamat yang diam. Jika cepat rambat bunyi di udara 340 m/s, frekuensi bunyi yang didengar pengamat adalah...', opts: ['A. 600 Hz', 'B. 640 Hz', 'C. 680 Hz', 'D. 720 Hz', 'E. 760 Hz'], ans: 2, solution: 'Efek Doppler: Sumber mendekati pengamat ($v_s$ minus). $f_p = \\frac{v}{v - v_s} f_s = \\frac{340}{340 - 20} (640) = \\frac{340}{320} (640) = 340 \\times 2 = 680\\text{ Hz}$.' },
+            { id: 15, mod: 4, topic: 'Gelombang Bunyi', text: 'Panjang gelombang bunyi di udara yang memiliki frekuensi 425 Hz dengan cepat rambat bunyi 340 m/s adalah...', opts: ['A. 0,4 m', 'B. 0,8 m', 'C. 1,25 m', 'D. 1,5 m', 'E. 2,0 m'], ans: 1, solution: '$v = \\lambda f \\rightarrow \\lambda = v / f = 340 / 425 = 0,8\\text{ m}$.' }
+        ];
+
+        // Navigation Handler
+        function switchView(viewName) {
+            appState.currentView = viewName;
+            
+            // Hide all panels
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+            
+            // Show selected panel
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+
+            // Update Header Nav active status
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-blue-400');
+                btn.classList.add('text-slate-300');
+            });
+            const activeBtn = document.getElementById(`nav-${viewName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-slate-800', 'text-blue-400');
+            }
+
+            // View Initialization hooks
+            if (viewName === 'materi') renderModuleContent(appState.currentModule);
+            if (viewName === 'lab') initVirtualLab();
+            if (viewName === 'latihan') loadPracticeQuestions(1);
+            if (viewName === 'progres') renderProgressAnalytics();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openModuleTopic(modId) {
+            appState.currentModule = modId;
+            switchView('materi');
+        }
+
+        // Render Learning Module View
+        function renderModuleContent(modId) {
+            appState.currentModule = modId;
+            
+            // Update Tab Highlight
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`mod-tab-${i}`);
+                if (i === modId) {
+                    btn.className = 'mod-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-blue-600 text-white shadow-lg shadow-blue-600/30';
+                } else {
+                    btn.className = 'mod-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-800 text-slate-400 hover:bg-slate-700';
+                }
+            }
+
+            const moduleData = physicsModules.find(m => m.id === modId);
+            const container = document.getElementById('module-display-area');
+            
+            let html = `
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-8">
+                    <div class="border-b border-slate-800 pb-4">
+                        <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Modul Pembelajaran ${modId}</span>
+                        <h1 class="text-2xl font-black text-white mt-1">${moduleData.title}</h1>
+                    </div>
+            `;
+
+            moduleData.subtopics.forEach((sub, idx) => {
+                html += `
+                    <div class="bg-slate-950 border border-slate-800/80 rounded-2xl p-6 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> ${sub.title}
+                            </h2>
+                            <span class="text-[10px] px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-300 font-semibold border border-blue-500/20">TKA Competency</span>
+                        </div>
+
+                        <!-- 1. Learning Goal -->
+                        <div class="p-4 rounded-xl bg-blue-950/20 border border-blue-900/40 text-xs">
+                            <span class="font-bold text-blue-300"><i class="fa-solid fa-bullseye mr-1"></i> Tujuan Pembelajaran:</span>
+                            <p class="text-slate-300 mt-1">${sub.goal}</p>
+                        </div>
+
+                        <!-- 2. Real World Phenomenon -->
+                        <div class="p-4 rounded-xl bg-purple-950/20 border border-purple-900/40 text-xs">
+                            <span class="font-bold text-purple-300"><i class="fa-solid fa-cloud-sun mr-1"></i> Fenomena Pemantik:</span>
+                            <p class="text-slate-300 mt-1 italic">"${sub.phenomenon}"</p>
+                        </div>
+
+                        <!-- 3. Concept Explanation -->
+                        <div class="space-y-2">
+                            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-book text-emerald-400"></i> Penjelasan Konsep Utama</h4>
+                            <p class="text-xs text-slate-300 leading-relaxed bg-slate-900 p-4 rounded-xl border border-slate-800">${sub.concept}</p>
+                        </div>
+
+                        <!-- 4. Key Formulas -->
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-square-root-variable text-amber-400"></i> Persamaan & Rumus Penting</h4>
+                            <div class="grid sm:grid-cols-2 gap-3">
+                                ${sub.formulas.map(f => `
+                                    <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
+                                        <div class="text-xs font-bold text-amber-300">${f.name}</div>
+                                        <div class="my-2 text-center text-sm font-bold text-white bg-slate-950 py-2 rounded-lg border border-slate-800">
+                                            \\[${f.formula}\\]
+                                        </div>
+                                        <div class="text-[10px] text-slate-400">${f.desc}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- 5. Quick Check Interactive -->
+                        <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+                            <h4 class="text-xs font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-cyan-400"></i> Cek Pemahaman Cepat
+                            </h4>
+                            ${sub.checkQuestions.map((q, qIdx) => `
+                                <div class="text-xs space-y-2">
+                                    <p class="text-slate-200 font-medium">${q.q}</p>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        ${q.opts.map((opt, oIdx) => `
+                                            <button onclick="checkQuickAnswer(${modId}, ${idx}, ${qIdx}, ${oIdx}, ${q.ans})" class="quick-opt-btn-${modId}-${idx}-${qIdx} p-2 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-left text-slate-300 transition">
+                                                ${opt}
+                                            </button>
+                                        `).join('')}
+                                    </div>
+                                    <div id="quick-expl-${modId}-${idx}-${qIdx}" class="hidden p-3 rounded-lg text-xs leading-relaxed"></div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            // Mark module completed in user progress
+            appState.userProgress.modulesCompleted[modId - 1] = true;
+            saveProgressToLocalStorage();
+
+            // Re-render MathJax formula expressions
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function checkQuickAnswer(modId, topicIdx, qIdx, selectedIdx, correctIdx) {
+            const btns = document.querySelectorAll(`.quick-opt-btn-${modId}-${topicIdx}-${qIdx}`);
+            const expl = document.getElementById(`quick-expl-${modId}-${topicIdx}-${qIdx}`);
+            const questionData = physicsModules.find(m => m.id === modId).subtopics[topicIdx].checkQuestions[qIdx];
+
+            btns.forEach((btn, i) => {
+                btn.disabled = true;
+                if (i === correctIdx) {
+                    btn.classList.add('bg-emerald-600/30', 'border-emerald-500', 'text-emerald-300');
+                } else if (i === selectedIdx) {
+                    btn.classList.add('bg-rose-600/30', 'border-rose-500', 'text-rose-300');
+                }
+            });
+
+            expl.classList.remove('hidden');
+            if (selectedIdx === correctIdx) {
+                expl.className = 'p-3 rounded-lg text-xs leading-relaxed bg-emerald-950/40 border border-emerald-800 text-emerald-300';
+                expl.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> <strong>Tepat skali!</strong> ${questionData.expl}`;
+            } else {
+                expl.className = 'p-3 rounded-lg text-xs leading-relaxed bg-rose-950/40 border border-rose-800 text-rose-300';
+                expl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> <strong>Belum Tepat.</strong> ${questionData.expl}`;
+            }
+        }
+
+        // ==========================================
+        // VIRTUAL LABORATORY SIMULATION ENGINES
+        // ==========================================
+        let currentSim = 'pengukuran';
+        let animFrameId = null;
+
+        // Simulator Parameters
+        let simParams = {
+            pengukuran: { type: 'vernier', value: 2.37 },
+            gerak_lurus: { type: 'GLBB', v0: 5, a: 2, t: 0 },
+            parabola: { v0: 30, angle: 45, t: 0 },
+            newton: { mass: 5, force: 20, friction: 0.1 },
+            momentum: { m1: 2, v1: 10, m2: 3, v2: 0, e: 1, t: 0 },
+            rotasi: { force: 20, radius: 1.5, angle: 90 },
+            fluida: { depth: 3, density: 1000 },
+            gelombang: { freq: 440, amp: 50, playAudio: false }
+        };
+
+        function switchSimulation(simType) {
+            currentSim = simType;
+            initVirtualLab();
+        }
+
+        function resetCurrentSimulation() {
+            simParams.gerak_lurus.t = 0;
+            simParams.parabola.t = 0;
+            simParams.momentum.t = 0;
+            initVirtualLab();
+        }
+
+        function initVirtualLab() {
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            
+            const titleEl = document.getElementById('lab-title');
+            const controlsEl = document.getElementById('lab-controls');
+            const explanationEl = document.getElementById('lab-explanation');
+
+            if (currentSim === 'pengukuran') {
+                titleEl.innerHTML = `<i class="fa-solid fa-ruler-combined"></i> Simulasi Jangka Sorong & Mikrometer`;
+                explanationEl.innerText = "Geser slider untuk menggerakkan skala nonius. Amati garis skala utama dan nonius yang saling berimpit tegak lurus.";
+                controlsEl.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Pilih Alat Ukur</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="simParams.pengukuran.type='vernier'; renderLab();" class="py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-cyan-400">Jangka Sorong</button>
+                            <button onclick="simParams.pengukuran.type='micrometer'; renderLab();" class="py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-purple-400">Mikrometer Sekrup</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Nilai Ukur Benda: <span id="val-read" class="text-amber-400 font-bold">2.37 cm</span></label>
+                        <input type="range" min="0.5" max="5.0" step="0.01" value="2.37" oninput="simParams.pengukuran.value=parseFloat(this.value); document.getElementById('val-read').innerText=this.value + (simParams.pengukuran.type==='vernier'?' cm':' mm'); renderLab();" class="w-full accent-cyan-500" />
+                    </div>
+                `;
+            } else if (currentSim === 'gerak_lurus') {
+                titleEl.innerHTML = `<i class="fa-solid fa-gauge-high"></i> Simulasi Gerak Lurus & Grafik`;
+                explanationEl.innerText = "Ubah kecepatan awal dan percepatan untuk melihat mobil bergerak serta pola kurva grafik v-t dan s-t secara langsung.";
+                controlsEl.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Kecepatan Awal (v0): <span class="text-amber-400 font-bold" id="v0-val">5</span> m/s</label>
+                        <input type="range" min="0" max="20" value="5" oninput="simParams.gerak_lurus.v0=parseFloat(this.value); document.getElementById('v0-val').innerText=this.value;" class="w-full accent-blue-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Percepatan (a): <span class="text-amber-400 font-bold" id="a-val">2</span> m/s²</label>
+                        <input type="range" min="-5" max="5" value="2" oninput="simParams.gerak_lurus.a=parseFloat(this.value); document.getElementById('a-val').innerText=this.value;" class="w-full accent-blue-500" />
+                    </div>
+                    <button onclick="resetCurrentSimulation()" class="w-full py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs"><i class="fa-solid fa-play mr-1"></i> Jalankan Simulasi Gerak</button>
+                `;
+            } else if (currentSim === 'parabola') {
+                titleEl.innerHTML = `<i class="fa-solid fa-bow-arrow"></i> Simulasi Lintasan Parabola`;
+                explanationEl.innerText = "Atur kecepatan peluncuran dan sudut elevasi untuk melihat jangkauan maksimum dan ketinggian puncak proyektil.";
+                controlsEl.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Kecepatan Awal (v0): <span class="text-amber-400 font-bold" id="pv0-val">30</span> m/s</label>
+                        <input type="range" min="10" max="50" value="30" oninput="simParams.parabola.v0=parseFloat(this.value); document.getElementById('pv0-val').innerText=this.value;" class="w-full accent-purple-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Sudut Elevasi (θ): <span class="text-amber-400 font-bold" id="pang-val">45</span>°</label>
+                        <input type="range" min="15" max="75" value="45" oninput="simParams.parabola.angle=parseFloat(this.value); document.getElementById('pang-val').innerText=this.value;" class="w-full accent-purple-500" />
+                    </div>
+                    <button onclick="resetCurrentSimulation()" class="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs"><i class="fa-solid fa-play mr-1"></i> Tembakkan Proyektil</button>
+                `;
+            } else if (currentSim === 'newton') {
+                titleEl.innerHTML = `<i class="fa-solid fa-boxes-packing"></i> Hukum II Newton & Diagram Gaya`;
+                explanationEl.innerText = "Amati diagram benda bebas (Free Body Diagram) secara konseptual. Resultan gaya menentukan besarnya percepatan.";
+                controlsEl.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Massa Balok (m): <span class="text-amber-400 font-bold" id="nm-val">5</span> kg</label>
+                        <input type="range" min="1" max="20" value="5" oninput="simParams.newton.mass=parseFloat(this.value); document.getElementById('nm-val').innerText=this.value; renderLab();" class="w-full accent-emerald-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Gaya Tarik (F): <span class="text-amber-400 font-bold" id="nf-val">20</span> N</label>
+                        <input type="range" min="0" max="50" value="20" oninput="simParams.newton.force=parseFloat(this.value); document.getElementById('nf-val').innerText=this.value; renderLab();" class="w-full accent-emerald-500" />
+                    </div>
+                `;
+            } else if (currentSim === 'momentum') {
+                titleEl.innerHTML = `<i class="fa-solid fa-circle-dot"></i> Simulasi Tumbukan 1 Dimensi`;
+                explanationEl.innerText = "Ubah rasio massa dan koefisien restitusi (e) untuk membedakan tumbukan lenting sempurna (e=1) dan tidak lenting sama sekali (e=0).";
+                controlsEl.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Koefisien Restitusi (e): <span class="text-amber-400 font-bold" id="me-val">1.0</span></label>
+                        <input type="range" min="0" max="1" step="0.1" value="1.0" oninput="simParams.momentum.e=parseFloat(this.value); document.getElementById('me-val').innerText=this.value;" class="w-full accent-rose-500" />
+                    </div>
+                    <button onclick="resetCurrentSimulation()" class="w-full py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs"><i class="fa-solid fa-play mr-1"></i> Mulai Tumbukan</button>
+                `;
+            } else if (currentSim === 'rotasi') {
+                titleEl.innerHTML = `<i class="fa-solid fa-arrows-spin"></i> Simulasi Momen Gaya (Torsi)`;
+                explanationEl.innerText = "Semakin jauh posisi titik tangkap gaya dari poros (lengan r), semakin besar torsi yang dihasilkan untuk memutar batang.";
+                controlsEl.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Besar Gaya (F): <span class="text-amber-400 font-bold" id="rf-val">20</span> N</label>
+                        <input type="range" min="5" max="50" value="20" oninput="simParams.rotasi.force=parseFloat(this.value); document.getElementById('rf-val').innerText=this.value; renderLab();" class="w-full accent-amber-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Lengan Gaya (r): <span class="text-amber-400 font-bold" id="rr-val">1.5</span> m</label>
+                        <input type="range" min="0.5" max="3.0" step="0.1" value="1.5" oninput="simParams.rotasi.radius=parseFloat(this.value); document.getElementById('rr-val').innerText=this.value; renderLab();" class="w-full accent-amber-500" />
+                    </div>
+                `;
+            } else if (currentSim === 'fluida') {
+                titleEl.innerHTML = `<i class="fa-solid fa-water"></i> Tekanan Hidrostatis Fluida`;
+                explanationEl.innerText = "Tekanan hidrostatis berbanding lurus dengan kedalaman (h) dan massa jenis zat cair (rho).";
+                controlsEl.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Kedalaman (h): <span class="text-amber-400 font-bold" id="fd-val">3</span> m</label>
+                        <input type="range" min="1" max="10" value="3" oninput="simParams.fluida.depth=parseFloat(this.value); document.getElementById('fd-val').innerText=this.value; renderLab();" class="w-full accent-cyan-500" />
+                    </div>
+                `;
+            } else if (currentSim === 'gelombang') {
+                titleEl.innerHTML = `<i class="fa-solid fa-wave-square"></i> Gelombang Bunyi & Tone Synthesizer`;
+                explanationEl.innerText = "Atur frekuensi dan amplitudo untuk mendengarkan nada secara langsung menggunakan Web Audio API.";
+                controlsEl.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Frekuensi Bunyi: <span class="text-amber-400 font-bold" id="gf-val">440</span> Hz (Nada A4)</label>
+                        <input type="range" min="220" max="880" value="440" oninput="simParams.gelombang.freq=parseFloat(this.value); document.getElementById('gf-val').innerText=this.value; updateAudioTone(); renderLab();" class="w-full accent-indigo-500" />
+                    </div>
+                    <button onclick="toggleAudioTone()" id="audio-toggle-btn" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"><i class="fa-solid fa-volume-high mr-1"></i> Bunyikan Frekuensi Audio</button>
+                `;
+            }
+
+            renderLab();
+        }
+
+        let audioCtx = null;
+        let oscNode = null;
+
+        function toggleAudioTone() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const btn = document.getElementById('audio-toggle-btn');
+            if (simParams.gelombang.playAudio) {
+                if (oscNode) oscNode.stop();
+                simParams.gelombang.playAudio = false;
+                btn.className = "w-full py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs";
+                btn.innerHTML = `<i class="fa-solid fa-volume-high mr-1"></i> Bunyikan Frekuensi Audio`;
+            } else {
+                oscNode = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                oscNode.type = 'sine';
+                oscNode.frequency.setValueAtTime(simParams.gelombang.freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                oscNode.connect(gain);
+                gain.connect(audioCtx.destination);
+                oscNode.start();
+                simParams.gelombang.playAudio = true;
+                btn.className = "w-full py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs";
+                btn.innerHTML = `<i class="fa-solid fa-volume-xmark mr-1"></i> Matikan Suara Bunyi`;
+            }
+        }
+
+        function updateAudioTone() {
+            if (oscNode && simParams.gelombang.playAudio && audioCtx) {
+                oscNode.frequency.setValueAtTime(simParams.gelombang.freq, audioCtx.currentTime);
+            }
+        }
+
+        function renderLab() {
+            const canvas = document.getElementById('lab-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Handle DPI Scaling
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const outputsEl = document.getElementById('lab-outputs');
+
+            if (currentSim === 'pengukuran') {
+                const val = simParams.pengukuran.value;
+                if (simParams.pengukuran.type === 'vernier') {
+                    // Draw Vernier Caliper
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillRect(40, h/2 - 20, w - 80, 40); // Main bar
+
+                    // Main Scale Graduations
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 1;
+                    for (let i = 0; i <= 50; i++) {
+                        const x = 60 + i * 12;
+                        if (x < w - 60) {
+                            const isMajor = i % 10 === 0;
+                            ctx.beginPath();
+                            ctx.moveTo(x, h/2 - 20);
+                            ctx.lineTo(x, h/2 - (isMajor ? 40 : 30));
+                            ctx.stroke();
+                            if (isMajor) {
+                                ctx.fillStyle = '#e2e8f0';
+                                ctx.font = '10px sans-serif';
+                                ctx.fillText((i/10).toString(), x - 3, h/2 - 45);
+                            }
+                        }
+                    }
+
+                    // Sliding Vernier Jaw
+                    const slideX = 60 + val * 12 * 10; // scale factor
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.globalAlpha = 0.8;
+                    ctx.fillRect(slideX - 20, h/2 - 10, 140, 60);
+                    ctx.globalAlpha = 1.0;
+
+                    outputsEl.innerHTML = `
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Skala Utama:</span> <strong class="text-white">${Math.floor(val)} cm</strong></div>
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Skala Nonius:</span> <strong class="text-white">${Math.round((val - Math.floor(val))*100)} (x 0,01)</strong></div>
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Hasil Akhir:</span> <strong class="text-cyan-400">${val.toFixed(2)} cm</strong></div>
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Ketelitian:</span> <strong class="text-amber-400">0,01 cm</strong></div>
+                    `;
+                } else {
+                    // Draw Micrometer Screw
+                    ctx.fillStyle = '#334155';
+                    ctx.fillRect(50, h/2 - 25, 180, 50); // Sleeve
+
+                    ctx.fillStyle = '#7c3aed';
+                    ctx.fillRect(230, h/2 - 35, 120, 70); // Thimble
+
+                    outputsEl.innerHTML = `
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Skala Utama:</span> <strong class="text-white">${Math.floor(val*2)/2} mm</strong></div>
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Skala Nonius:</span> <strong class="text-white">${Math.round((val % 0.5)*100)}</strong></div>
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Hasil Akhir:</span> <strong class="text-purple-400">${val.toFixed(2)} mm</strong></div>
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Ketelitian:</span> <strong class="text-amber-400">0,01 mm</strong></div>
+                    `;
+                }
+            } else if (currentSim === 'gerak_lurus') {
+                const p = simParams.gerak_lurus;
+                p.t += 0.03;
+                if (p.t > 8) p.t = 0;
+
+                const vt = p.v0 + p.a * p.t;
+                const s = p.v0 * p.t + 0.5 * p.a * p.t * p.t;
+
+                // Draw Track
+                ctx.strokeStyle = '#475569';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(40, h - 60);
+                ctx.lineTo(w - 40, h - 60);
+                ctx.stroke();
+
+                // Draw Car
+                const carX = Math.min(40 + s * 5, w - 80);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillRect(carX, h - 85, 40, 25);
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.arc(carX + 10, h - 60, 5, 0, Math.PI*2);
+                ctx.arc(carX + 30, h - 60, 5, 0, Math.PI*2);
+                ctx.fill();
+
+                outputsEl.innerHTML = `
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Waktu (t):</span> <strong class="text-white">${p.t.toFixed(1)} s</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Kecepatan (v):</span> <strong class="text-cyan-400">${vt.toFixed(1)} m/s</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Jarak (s):</span> <strong class="text-amber-400">${s.toFixed(1)} m</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Jenis Gerak:</span> <strong class="text-purple-400">${p.a === 0 ? 'GLB' : 'GLBB'}</strong></div>
+                `;
+
+                animFrameId = requestAnimationFrame(renderLab);
+            } else if (currentSim === 'parabola') {
+                const p = simParams.parabola;
+                p.t += 0.04;
+                const g = 9.8;
+                const rad = p.angle * Math.PI / 180;
+                const vx = p.v0 * Math.cos(rad);
+                const vy0 = p.v0 * Math.sin(rad);
+
+                const x = vx * p.t;
+                const y = vy0 * p.t - 0.5 * g * p.t * p.t;
+
+                const hMax = (vy0 * vy0) / (2 * g);
+                const xMax = (p.v0 * p.v0 * Math.sin(2 * rad)) / g;
+                const tTotal = (2 * vy0) / g;
+
+                if (p.t > tTotal) p.t = 0;
+
+                // Draw Path Trajectory
+                ctx.strokeStyle = '#a855f7';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                for (let time = 0; time <= tTotal; time += 0.05) {
+                    const px = 40 + (vx * time) * 8;
+                    const py = (h - 50) - (vy0 * time - 0.5 * g * time * time) * 8;
+                    if (time === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw Projectile
+                const curX = 40 + x * 8;
+                const curY = (h - 50) - y * 8;
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(curX, Math.min(curY, h - 50), 8, 0, Math.PI*2);
+                ctx.fill();
+
+                outputsEl.innerHTML = `
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Tinggi Maks (hMax):</span> <strong class="text-cyan-400">${hMax.toFixed(1)} m</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Jangkauan (xMax):</span> <strong class="text-amber-400">${xMax.toFixed(1)} m</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Waktu Udara:</span> <strong class="text-white">${tTotal.toFixed(1)} s</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Sudut (θ):</span> <strong class="text-purple-400">${p.angle}°</strong></div>
+                `;
+
+                animFrameId = requestAnimationFrame(renderLab);
+            } else if (currentSim === 'newton') {
+                const p = simParams.newton;
+                const accel = p.force / p.mass;
+
+                // Draw Block
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(w/2 - 40, h/2 - 30, 80, 60);
+
+                // Draw Force Vectors
+                // Force Right
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(w/2 + 40, h/2);
+                ctx.lineTo(w/2 + 40 + p.force * 2, h/2);
+                ctx.stroke();
+
+                outputsEl.innerHTML = `
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Gaya Tarik (F):</span> <strong class="text-amber-400">${p.force} N</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Massa (m):</span> <strong class="text-white">${p.mass} kg</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Percepatan (a):</span> <strong class="text-emerald-400">${accel.toFixed(2)} m/s²</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Hukum:</span> <strong class="text-blue-400">Hukum II Newton</strong></div>
+                `;
+            } else if (currentSim === 'rotasi') {
+                const p = simParams.rotasi;
+                const torque = p.force * p.radius;
+
+                // Draw Bar
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.moveTo(80, h/2);
+                ctx.lineTo(80 + p.radius * 100, h/2);
+                ctx.stroke();
+
+                // Draw Fulcrum Pivot
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.moveTo(80, h/2 + 4);
+                ctx.lineTo(70, h/2 + 25);
+                ctx.lineTo(90, h/2 + 25);
+                ctx.fill();
+
+                outputsEl.innerHTML = `
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Gaya (F):</span> <strong class="text-white">${p.force} N</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Lengan (r):</span> <strong class="text-white">${p.radius} m</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Torsi (τ):</span> <strong class="text-amber-400">${torque.toFixed(1)} Nm</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Poros:</span> <strong class="text-cyan-400">Ujung Batang</strong></div>
+                `;
+            } else if (currentSim === 'fluida') {
+                const p = simParams.fluida;
+                const pHydro = p.density * 9.8 * p.depth;
+
+                // Draw Liquid Tank
+                ctx.fillStyle = '#0284c7';
+                ctx.globalAlpha = 0.4;
+                ctx.fillRect(w/2 - 100, 60, 200, h - 100);
+                ctx.globalAlpha = 1.0;
+
+                // Depth Sensor Marker
+                const sensorY = 60 + p.depth * 25;
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(w/2, sensorY, 6, 0, Math.PI*2);
+                ctx.fill();
+
+                outputsEl.innerHTML = `
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Kedalaman (h):</span> <strong class="text-white">${p.depth} m</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Massa Jenis (ρ):</span> <strong class="text-white">${p.density} kg/m³</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Tekanan (Ph):</span> <strong class="text-cyan-400">${(pHydro/1000).toFixed(1)} kPa</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Rumus:</span> <strong class="text-amber-400">Ph = ρ·g·h</strong></div>
+                `;
+            } else if (currentSim === 'gelombang') {
+                const p = simParams.gelombang;
+                // Draw Sound Sine Wave
+                ctx.strokeStyle = '#6366f1';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let x = 0; x < w; x++) {
+                    const y = h/2 + Math.sin(x * 0.02 * (p.freq/200)) * (p.amp * 0.8);
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                outputsEl.innerHTML = `
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Frekuensi:</span> <strong class="text-indigo-400">${p.freq} Hz</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Panjang Gelombang:</span> <strong class="text-cyan-400">${(340/p.freq).toFixed(2)} m</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Cepat Rambat (v):</span> <strong class="text-white">340 m/s</strong></div>
+                    <div class="p-2 bg-slate-900 rounded border border-slate-800"><span class="text-slate-400">Status Audio:</span> <strong class="text-amber-400">${p.playAudio ? 'Aktif' : 'Mati'}</strong></div>
+                `;
+            }
+        }
+
+        // ==========================================
+        // PRACTICE QUESTIONS & EXPLANATIONS LOGIC
+        // ==========================================
+        function loadPracticeQuestions(modId) {
+            const container = document.getElementById('practice-questions-list');
+            const questions = bankQuestions.filter(q => q.mod === parseInt(modId));
+            
+            let html = '';
+            questions.forEach((q, idx) => {
+                html += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-bold border border-indigo-500/20">
+                                Soal #${idx + 1} • ${q.topic}
+                            </span>
+                            <span class="text-[10px] text-slate-400">TKA Standard</span>
+                        </div>
+
+                        <p class="text-sm font-medium text-slate-200 leading-relaxed">${q.text}</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                            ${q.opts.map((opt, oIdx) => `
+                                <button onclick="selectPracticeAnswer(${q.id}, ${oIdx}, ${q.ans})" id="prac-opt-${q.id}-${oIdx}" class="prac-btn-${q.id} p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left text-xs text-slate-300 transition">
+                                    ${opt}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div id="prac-expl-${q.id}" class="hidden p-4 rounded-xl text-xs leading-relaxed space-y-2">
+                            <!-- Solution explanation -->
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectPracticeAnswer(qId, selectedIdx, correctIdx) {
+            const q = bankQuestions.find(item => item.id === qId);
+            const btns = document.querySelectorAll(`.prac-btn-${qId}`);
+            const expl = document.getElementById(`prac-expl-${qId}`);
+
+            btns.forEach((btn, i) => {
+                btn.disabled = true;
+                if (i === correctIdx) {
+                    btn.classList.add('bg-emerald-600/30', 'border-emerald-500', 'text-emerald-300', 'font-bold');
+                } else if (i === selectedIdx) {
+                    btn.classList.add('bg-rose-600/30', 'border-rose-500', 'text-rose-300');
+                }
+            });
+
+            expl.classList.remove('hidden');
+            if (selectedIdx === correctIdx) {
+                expl.className = 'p-4 rounded-xl text-xs leading-relaxed bg-emerald-950/40 border border-emerald-800 text-emerald-300 space-y-1';
+                expl.innerHTML = `
+                    <div class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Jawaban Tepat!</div>
+                    <div><strong>Kunci:</strong> ${q.opts[correctIdx]}</div>
+                    <div class="pt-2 border-t border-emerald-800/60"><strong>Pembahasan:</strong> ${q.solution}</div>
+                `;
+            } else {
+                expl.className = 'p-4 rounded-xl text-xs leading-relaxed bg-rose-950/40 border border-rose-800 text-rose-300 space-y-1';
+                expl.innerHTML = `
+                    <div class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> Jawaban Belum Tepat</div>
+                    <div><strong>Kunci Jawaban Benar:</strong> ${q.opts[correctIdx]}</div>
+                    <div class="pt-2 border-t border-rose-800/60"><strong>Pembahasan Konsep:</strong> ${q.solution}</div>
+                `;
+            }
+
+            // Re-render math expressions in solution
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        // ==========================================
+        // TKA EXAM SIMULATION ENGINE
+        // ==========================================
+        function startTKASimulation() {
+            const nameInput = document.getElementById('sim-user-name');
+            if (nameInput && nameInput.value.trim() !== '') {
+                appState.simState.candidateName = nameInput.value.trim();
+            }
+
+            document.getElementById('sim-candidate-display').innerText = appState.simState.candidateName;
+
+            // Reset simulation exam state
+            appState.simState.active = true;
+            appState.simState.currentIdx = 0;
+            appState.simState.answers = new Array(15).fill(null);
+            appState.simState.flagged = new Array(15).fill(false);
+            appState.simState.timeLeftSeconds = 1800; // 30 mins
+
+            // Hide start & result, show exam active screen
+            document.getElementById('sim-start-screen').classList.add('hidden');
+            document.getElementById('sim-result-screen').classList.add('hidden');
+            document.getElementById('sim-exam-screen').classList.remove('hidden');
+
+            // Start Timer Countdown
+            if (appState.simState.timerInterval) clearInterval(appState.simState.timerInterval);
+            appState.simState.timerInterval = setInterval(updateExamTimer, 1000);
+
+            renderSimQuestion();
+            renderSimNavGrid();
+        }
+
+        function updateExamTimer() {
+            if (!appState.simState.active) return;
+
+            appState.simState.timeLeftSeconds--;
+            const mins = Math.floor(appState.simState.timeLeftSeconds / 60);
+            const secs = appState.simState.timeLeftSeconds % 60;
+            
+            document.getElementById('sim-timer-display').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            if (appState.simState.timeLeftSeconds <= 0) {
+                clearInterval(appState.simState.timerInterval);
+                finishExamSimulation();
+            }
+        }
+
+        function renderSimQuestion() {
+            const idx = appState.simState.currentIdx;
+            const q = bankQuestions[idx];
+
+            document.getElementById('sim-current-num').innerText = idx + 1;
+            document.getElementById('sim-question-text').innerHTML = `
+                <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">Modul ${q.mod} • ${q.topic}</div>
+                <div>${q.text}</div>
+            `;
+
+            const optsContainer = document.getElementById('sim-options-container');
+            let html = '';
+            q.opts.forEach((opt, oIdx) => {
+                const isSelected = appState.simState.answers[idx] === oIdx;
+                html += `
+                    <button onclick="selectSimOption(${oIdx})" class="w-full p-4 rounded-xl border text-left text-xs sm:text-sm font-medium transition flex items-center justify-between ${
+                        isSelected 
+                        ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-bold' 
+                        : 'bg-slate-950 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }">
+                        <span>${opt}</span>
+                        ${isSelected ? '<i class="fa-solid fa-circle-check text-blue-400"></i>' : ''}
+                    </button>
+                `;
+            });
+            optsContainer.innerHTML = html;
+
+            // Flagged button state
+            const flagBtn = document.getElementById('sim-flag-btn');
+            if (appState.simState.flagged[idx]) {
+                flagBtn.className = "px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs transition flex items-center gap-1.5";
+            } else {
+                flagBtn.className = "px-4 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold text-xs transition flex items-center gap-1.5";
+            }
+
+            // Prev/Next disable logic
+            document.getElementById('sim-prev-btn').disabled = idx === 0;
+            document.getElementById('sim-next-btn').disabled = idx === bankQuestions.length - 1;
+
+            // Typeset LaTeX math
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function selectSimOption(optIdx) {
+            const idx = appState.simState.currentIdx;
+            appState.simState.answers[idx] = optIdx;
+            renderSimQuestion();
+            renderSimNavGrid();
+        }
+
+        function toggleFlagCurrentQuestion() {
+            const idx = appState.simState.currentIdx;
+            appState.simState.flagged[idx] = !appState.simState.flagged[idx];
+            renderSimQuestion();
+            renderSimNavGrid();
+        }
+
+        function prevSimQuestion() {
+            if (appState.simState.currentIdx > 0) {
+                appState.simState.currentIdx--;
+                renderSimQuestion();
+                renderSimNavGrid();
+            }
+        }
+
+        function nextSimQuestion() {
+            if (appState.simState.currentIdx < bankQuestions.length - 1) {
+                appState.simState.currentIdx++;
+                renderSimQuestion();
+                renderSimNavGrid();
+            }
+        }
+
+        function jumpToSimQuestion(idx) {
+            appState.simState.currentIdx = idx;
+            renderSimQuestion();
+            renderSimNavGrid();
+        }
+
+        function renderSimNavGrid() {
+            const grid = document.getElementById('sim-nav-grid');
+            let html = '';
+            for (let i = 0; i < bankQuestions.length; i++) {
+                const isCurrent = appState.simState.currentIdx === i;
+                const isAnswered = appState.simState.answers[i] !== null;
+                const isFlagged = appState.simState.flagged[i];
+
+                let bgClass = 'bg-slate-950 border-slate-800 text-slate-400';
+                if (isFlagged) bgClass = 'bg-amber-500 border-amber-400 text-slate-950 font-black';
+                else if (isAnswered) bgClass = 'bg-blue-600 border-blue-500 text-white font-bold';
+
+                if (isCurrent) bgClass += ' ring-2 ring-white';
+
+                html += `
+                    <button onclick="jumpToSimQuestion(${i})" class="h-10 rounded-xl border text-xs flex items-center justify-center transition ${bgClass}">
+                        ${i + 1}
+                    </button>
+                `;
+            }
+            grid.innerHTML = html;
+        }
+
+        function confirmSubmitExam() {
+            const unanswered = appState.simState.answers.filter(a => a === null).length;
+            let msg = "Apakah Anda yakin ingin mengakhiri simulasi ujian?";
+            if (unanswered > 0) {
+                msg = `Masih terdapat ${unanswered} soal yang belum dijawab. Yakin ingin submit sekarang?`;
+            }
+            
+            if (confirm(msg)) {
+                finishExamSimulation();
+            }
+        }
+
+        function finishExamSimulation() {
+            appState.simState.active = false;
+            if (appState.simState.timerInterval) clearInterval(appState.simState.timerInterval);
+
+            // Calculate Score
+            let correctCount = 0;
+            let modCorrect = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            let modTotal = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+            bankQuestions.forEach((q, idx) => {
+                modTotal[q.mod]++;
+                if (appState.simState.answers[idx] === q.ans) {
+                    correctCount++;
+                    modCorrect[q.mod]++;
+                }
+            });
+
+            const finalScore = Math.round((correctCount / bankQuestions.length) * 100);
+            appState.userProgress.lastSimScore = finalScore;
+            saveProgressToLocalStorage();
+
+            // Render Results View
+            document.getElementById('sim-exam-screen').classList.add('hidden');
+            document.getElementById('sim-result-screen').classList.remove('hidden');
+
+            document.getElementById('res-score-number').innerText = finalScore;
+            document.getElementById('res-correct-count').innerText = `${correctCount} / ${bankQuestions.length}`;
+
+            // Render Module Breakdown Cards
+            const breakdownContainer = document.getElementById('res-module-breakdown');
+            let bHtml = '';
+            for (let m = 1; m <= 4; m++) {
+                const pct = Math.round((modCorrect[m] / modTotal[m]) * 100) || 0;
+                bHtml += `
+                    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs space-y-1">
+                        <div class="text-slate-400 font-semibold">Modul ${m}</div>
+                        <div class="text-lg font-bold text-white">${pct}% Penguasaan</div>
+                        <div class="text-[10px] text-slate-400">${modCorrect[m]} dari ${modTotal[m]} soal benar</div>
+                    </div>
+                `;
+            }
+            breakdownContainer.innerHTML = bHtml;
+
+            // Render Solution Review Key List
+            renderSimReviewList();
+        }
+
+        function toggleSimReviewMode() {
+            const reviewContainer = document.getElementById('sim-review-container');
+            reviewContainer.classList.toggle('hidden');
+            if (!reviewContainer.classList.contains('hidden')) {
+                reviewContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function renderSimReviewList() {
+            const container = document.getElementById('sim-review-list');
+            let html = '';
+
+            bankQuestions.forEach((q, idx) => {
+                const userAns = appState.simState.answers[idx];
+                const isCorrect = userAns === q.ans;
+
+                html += `
+                    <div class="bg-slate-950 border ${isCorrect ? 'border-emerald-800/60' : 'border-rose-800/60'} rounded-2xl p-6 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'} flex items-center gap-1.5">
+                                <i class="fa-solid ${isCorrect ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                                Soal #${idx + 1} — ${isCorrect ? 'Jawaban Benar' : 'Jawaban Salah / Kosong'}
+                            </span>
+                            <span class="text-[10px] text-slate-400">Modul ${q.mod} • ${q.topic}</span>
+                        </div>
+
+                        <p class="text-xs sm:text-sm font-medium text-slate-200">${q.text}</p>
+
+                        <div class="text-xs space-y-1 bg-slate-900 p-3 rounded-xl border border-slate-800">
+                            <div><span class="text-slate-400">Jawaban Anda:</span> <strong class="${isCorrect ? 'text-emerald-400' : 'text-rose-400'}">${userAns !== null ? q.opts[userAns] : 'Tidak Dijawab'}</strong></div>
+                            <div><span class="text-slate-400">Kunci Jawaban:</span> <strong class="text-emerald-400">${q.opts[q.ans]}</strong></div>
+                        </div>
+
+                        <div class="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+                            <strong class="text-amber-400 block mb-1">Pembahasan & Analisis Konsep:</strong>
+                            ${q.solution}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        // ==========================================
+        // PROGRESS ANALYTICS & LOCAL STORAGE
+        // ==========================================
+        let chartInstance = null;
+
+        function renderProgressAnalytics() {
+            // Update Badges
+            const b1 = document.getElementById('badge-1');
+            const b2 = document.getElementById('badge-2');
+            const b3 = document.getElementById('badge-3');
+
+            const modsCount = appState.userProgress.modulesCompleted.filter(Boolean).length;
+            if (modsCount >= 1) b1.classList.remove('opacity-50');
+            if (modsCount >= 2) b2.classList.remove('opacity-50');
+            if (appState.userProgress.lastSimScore && appState.userProgress.lastSimScore >= 80) b3.classList.remove('opacity-50');
+
+            // Render Radar / Bar Chart
+            const ctx = document.getElementById('progress-chart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Kinematika', 'Dinamika', 'Fluida', 'Gelombang Bunyi'],
+                    datasets: [{
+                        label: 'Penguasaan Modul (%)',
+                        data: [
+                            appState.userProgress.modulesCompleted[0] ? 85 : 20,
+                            appState.userProgress.modulesCompleted[1] ? 90 : 15,
+                            appState.userProgress.modulesCompleted[2] ? 80 : 10,
+                            appState.userProgress.modulesCompleted[3] ? 95 : 15
+                        ],
+                        backgroundColor: ['#3b82f6', '#7c3aed', '#06b6d4', '#f59e0b'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Load saved reflection note
+            const refText = document.getElementById('reflection-text');
+            if (refText && appState.userProgress.reflection) {
+                refText.value = appState.userProgress.reflection;
+            }
+        }
+
+        function saveReflectionNote() {
+            const txt = document.getElementById('reflection-text').value;
+            appState.userProgress.reflection = txt;
+            saveProgressToLocalStorage();
+            const status = document.getElementById('reflection-status');
+            status.innerText = "Tersimpan di browser!";
+            setTimeout(() => status.innerText = "", 3000);
+        }
+
+        function saveProgressToLocalStorage() {
+            try {
+                localStorage.setItem('physics_lab_sman_saenam_progress', JSON.stringify(appState.userProgress));
+                updateOverallProgressUI();
+            } catch (e) {
+                console.warn('LocalStorage not accessible');
+            }
+        }
+
+        function loadProgressFromLocalStorage() {
+            try {
+                const data = localStorage.getItem('physics_lab_sman_saenam_progress');
+                if (data) {
+                    appState.userProgress = JSON.parse(data);
+                }
+            } catch (e) {
+                console.warn('LocalStorage error');
+            }
+            updateOverallProgressUI();
+        }
+
+        function updateOverallProgressUI() {
+            const completed = appState.userProgress.modulesCompleted.filter(Boolean).length;
+            const pct = Math.round((completed / 4) * 100);
+            
+            const txt = document.getElementById('home-overall-progress');
+            const bar = document.getElementById('home-progress-bar');
+            if (txt) txt.innerText = `${pct}%`;
+            if (bar) bar.style.width = `${pct}%`;
+        }
+
+        function clearUserProgressData() {
+            if (confirm("Reset seluruh data progres dan lencana belajar Anda?")) {
+                appState.userProgress = {
+                    modulesCompleted: [false, false, false, false],
+                    practiceScores: { 1: 0, 2: 0, 3: 0, 4: 0 },
+                    simulationsRun: 0,
+                    lastSimScore: null,
+                    reflection: ''
+                };
+                saveProgressToLocalStorage();
+                renderProgressAnalytics();
+            }
+        }
+
+        window.onload = function() {
+            loadProgressFromLocalStorage();
+            switchView('home');
+        };
+    </script>
+</body>
+</html>
